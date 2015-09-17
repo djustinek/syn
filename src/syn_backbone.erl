@@ -33,6 +33,7 @@
 -export([start_link/0]).
 -export([initdb/0]).
 -export([register/2, register/3]).
+-export([register_overwrite/2, register_overwrite/3]).
 -export([unregister/1]).
 -export([find_by_key/1, find_by_key/2]).
 -export([find_by_pid/1, find_by_pid/2]).
@@ -113,6 +114,24 @@ register(Key, Pid, Meta) ->
         _ ->
             {error, taken}
     end.
+
+-spec register_overwrite(Key :: any(), Pid :: pid()) -> ok | {error, taken}.
+register_overwrite(Key, Pid) ->
+    register_overwrite(Key, Pid, undefined).
+
+-spec register_overwrite(Key :: any(), Pid :: pid(), Meta :: any()) -> ok | {error, taken}.
+register_overwrite(Key, Pid, Meta) ->
+  Node = node(Pid),
+  %% add to table
+  mnesia:dirty_write(#syn_processes_table{
+      key = Key,
+      pid = Pid,
+      node = Node,
+      meta = Meta
+  }),
+  %% link
+  gen_server:call({?MODULE, Node}, {link_process, Pid}).
+
 
 -spec unregister(Key :: any()) -> ok | {error, undefined}.
 unregister(Key) ->

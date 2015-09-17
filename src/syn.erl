@@ -32,6 +32,7 @@
 -export([start/0, stop/0]).
 -export([init/0]).
 -export([register/2, register/3]).
+-export([register_overwrite/2, register_overwrite/3]).
 -export([unregister/1]).
 -export([find_by_key/1, find_by_key/2]).
 -export([find_by_pid/1, find_by_pid/2]).
@@ -62,6 +63,14 @@ register(Key, Pid) ->
 -spec register(Key :: any(), Pid :: pid(), Meta :: any()) -> ok | {error, taken}.
 register(Key, Pid, Meta) ->
     syn_backbone:register(Key, Pid, Meta).
+
+-spec register_overwrite(Key :: any(), Pid :: pid()) -> ok | {error, taken}.
+register_overwrite(Key, Pid) ->
+    syn_backbone:register_overwrite(Key, Pid).
+
+-spec register_overwrite(Key :: any(), Pid :: pid(), Meta :: any()) -> ok | {error, taken}.
+register_overwrite(Key, Pid, Meta) ->
+    syn_backbone:register_overwrite(Key, Pid, Meta).
 
 -spec unregister(Key :: any()) -> ok | {error, undefined}.
 unregister(Key) ->
